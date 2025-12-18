@@ -1,0 +1,116 @@
+
+/*===========================================================================================================
+
+?? SQL Query Overview – Pizza Sales Analysis
+
+These SQL queries are used to perform data validation, aggregation, and business analysis
+on the `pizza_sales` table after importing the dataset into Microsoft SQL Server.
+
+The queries are designed to calculate key performance indicators (KPIs), analyze customer
+ordering behavior, identify peak sales periods, and evaluate product performance across
+pizza categories, sizes, and individual pizza items.
+
+?? Key Objectives Covered:
+- Calculate overall business KPIs such as total revenue, total orders, and average order value
+- Measure total pizzas sold and average pizzas per order to understand order size behavior
+- Analyze daily and hourly order trends to identify peak business days and times
+- Determine sales contribution by pizza category and pizza size using percentage analysis
+- Identify top-performing and low-performing pizzas based on quantity sold
+
+?? Purpose:
+The results generated from these queries were validated and then connected to Microsoft Excel
+via SQL Server connection, where they were used to build an interactive sales dashboard for
+data-driven decision-making.
+
+?? Note:
+- DISTINCT order_id is used where necessary to avoid duplicate order counts
+- Aggregations are performed at appropriate granularity to ensure accurate metrics
+- Percentage calculations are derived from total revenue to maintain consistency
+
+These queries form the backbone of the analytical workflow and ensure accurate, reliable
+insights for dashboard visualization.
+==========================================================================================================*/
+
+
+SELECT * FROM pizza_sales
+
+--TOTAL REVENUE--
+SELECT 
+SUM(total_price) AS Total_Revenue
+FROM pizza_sales;
+
+--AVERAGE ORDER VALUE--
+SELECT 
+SUM(total_price) / COUNT(DISTINCT order_id) AS Avg_Order_Value
+FROM pizza_sales;
+
+--TOTAL PIZZA SOLD--
+SELECT
+SUM(quantity) AS Total_Pizza_Sold
+FROM pizza_sales;
+
+--TOTAL ORDERS--
+SELECT
+COUNT(DISTINCT order_id) AS Total_Orders
+FROM pizza_sales;
+
+--AVERAGE PIZZAS PER ORDER--
+SELECT
+CAST(CAST(SUM(quantity) AS DECIMAL(10,2)) / CAST(COUNT(DISTINCT order_id) AS DECIMAL(10,2)) AS DECIMAL(10,2)) AS Avg_Pizzas_Per_Order
+FROM pizza_sales;
+
+--DAILY TREND FOR TOTAL ORDERS--
+SELECT
+DATENAME(weekday, order_date) AS Order_Day,
+COUNT(DISTINCT order_id) AS Total_Orders
+FROM pizza_sales
+GROUP BY DATENAME(weekday, order_date) 
+
+--HOURLY TREND FOR TOTAL ORDERS--
+SELECT
+DATEPART(Hour, order_time) AS Order_Hours,
+COUNT(DISTINCT order_id) AS Total_Orders
+FROM pizza_sales
+GROUP BY DATEPART(Hour, order_time)
+ORDER BY DATEPART(Hour, order_time)
+
+--PERCENTAGE OF SALES BY PIZZA CATEGORY--
+SELECT 
+pizza_category,
+SUM(total_price) * 100 / (SELECT SUM(total_price) FROM pizza_sales) AS PCT
+FROM pizza_sales
+GROUP BY pizza_category
+
+--PERCENTAGE OF SALES BY PIZZA SIZE--
+SELECT 
+pizza_size,
+CAST(SUM(total_price) * 100 / (SELECT SUM(total_price) FROM pizza_sales) AS DECIMAL (10,2)) AS PCT
+FROM pizza_sales
+GROUP BY pizza_size
+ORDER BY PCT DESC
+
+--TOTAL PIZZAS SOLD BY PIZZA CATEGORY--
+SELECT 
+pizza_category,
+SUM(quantity) AS Total_Pizza_Sold
+FROM pizza_sales
+GROUP BY pizza_category
+
+--TOP 5 BEST SELLERS BY TOTAL PIZZAS SOLD--
+SELECT TOP 5
+pizza_name,
+SUM(quantity) AS Total_Pizza_Sold
+FROM pizza_sales
+GROUP BY pizza_name
+ORDER BY Total_Pizza_Sold DESC
+
+--BOTTOM 5 BEST SELLERS BY TOTAL PIZZAS SOLD--
+SELECT TOP 5
+pizza_name,
+SUM(quantity) AS Total_Pizza_Sold
+FROM pizza_sales
+GROUP BY pizza_name
+ORDER BY Total_Pizza_Sold
+
+
+
