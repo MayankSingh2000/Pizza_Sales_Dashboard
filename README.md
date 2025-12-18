@@ -130,6 +130,7 @@ The raw **Excel dataset** was first imported into **Microsoft SQL Server**, wher
 ---
 
 ## 🖼 Dashboard Preview
+![image alt](https://github.com/MayankSingh2000/Pizza_Sales_Dashboard/blob/main/Docs/pizza_dashboard.png?raw=true)
 
 
 ---
