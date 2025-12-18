@@ -151,3 +151,11 @@ The raw **Excel dataset** was first imported into **Microsoft SQL Server**, wher
 
 ---
 
+## 👤 Author
+**Mayank Singh** 
+-- Aspiring Data Analyst
+-- Skilled in SQL, Power BI and Excel
+-- Actively seeking entry-level Data Analyst opportunities
+
+
+
